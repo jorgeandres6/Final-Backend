@@ -17,7 +17,7 @@ let app = {
         url: this.apiURL,
         type: 'get',
         success: function(data){
-          console.log(data);
+          $('.lista').html(render(data.datos));
         }
       })
   },
@@ -50,3 +50,27 @@ function buscar(){
 };
 
 buscar();
+
+function render(objArr) { //renderizar elementos
+        var html = '';
+
+        objArr.forEach(function(key, idx)
+        {
+            html += `<div class="card horizontal">
+                    <div class="card-image">
+                        <img src="http://localhost:3000/img/home.jpg">
+                    </div>
+                    <div class="card-stacked">
+                        <div class="card-content">
+                            <div> <p><strong>Direccion: </strong>${ key.Direccion }</p> </div>
+                            <div> <p><strong>Ciudad: </strong>${ key.Ciudad }</p> </div>
+                            <div> <p><strong>Telefono: </strong>${ key.Telefono }</p> </div>
+                            <div> <p><strong>Código postal: </strong>${ key.Codigo_Postal }</p> </div>
+                            <div> <p><strong>Precio: </strong>${ key.Precio }</p> </div>
+                            <div> <p><strong>Tipo: </strong>${ key.Tipo }</p> </div>
+                        </div>
+                    </div>
+                </div>`;
+        });
+        return html;
+    }//fin render

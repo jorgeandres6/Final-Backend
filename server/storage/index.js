@@ -3,7 +3,7 @@ var fs = require ('fs'),
 
 module.exports = {
   consultar: function(){
-    var dataPath = __dirname + path.join('data.json');
+    var dataPath = __dirname + path.join('/data.json');
     return new Promise(function(resolve, reject){
       fs.readFile(dataPath, 'utf8', function(err, readData){
         if(err) reject(err)
