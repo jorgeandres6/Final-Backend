@@ -9,7 +9,7 @@ $("#rangoPrecio").ionRangeSlider({
   prefix: "$"
 });
 
-let app = {
+let app = { //peticion ajax todos los datos
   personalizado : true,
   apiURL : "/consulta",
   consulta : function  (){
@@ -26,7 +26,7 @@ let app = {
   }
 };
 
-let filtros = {
+let filtros = { //peticion ajax solo datos para menus desplegables
   apiURL : "/filtros",
   consulta : function  (){
       $.ajax({
@@ -55,7 +55,7 @@ function setSearch() {
 
 setSearch();
 
-function buscar(){
+function buscar(){ //realizar la peticion http al servidor al presionar el boton de buscar
   let btnBuscar = $('#buscar');
   btnBuscar.click(function(){
     //console.log(app.apiURL);
@@ -65,49 +65,58 @@ function buscar(){
 
 buscar();
 
-function adjuntarFiltros(objArr){
-  var htmlc = '';
-  var htmlt = '';
+function adjuntarFiltros(objArr){ // Adjuntar datos obtenidos a los menus desplegables
+  var htmlc = '<option value="" selected>Escoge una ciudad</option>';
+  var htmlt = '<option value="" selected>Escoge un tipo</option>';
   objArr.ciudades.forEach((key, idx)=>{
     htmlc += '<option value="'+idx+'">'+key+'</option>'
   })
   objArr.tipos.forEach((key, idx)=>{
     htmlt += '<option value="'+idx+'">'+key+'</option>'
   })
-  $("#ciudad").append(htmlc);
-  $("#tipo").append(htmlt);
+  $("#ciudad").html(htmlc);
+  $("#tipo").html(htmlt);
   $('select').material_select();
 };
 
 function render(objArr) { //renderizar elementos
   var html = '';
-  var ciudad = $("#ciudad").val();
-  var tipo = $("#tipo").val();
+  var ciudad = $("#ciudad option:selected").text();
+  var tipo = $("#tipo option:selected").text();
   var valores = $("#rangoPrecio").val();
   valores = valores.split(";");
   //console.log(valores+"/"+ciudad);
   objArr.forEach(function(key, idx)
   {
+    let precio = parseInt(key.Precio.replace("$", "").replace(",", ""));
     if ($("#checkPersonalizada")[0].checked){
-
+      if((key.Ciudad == ciudad || ciudad == "Escoge una ciudad") && (key.Tipo==tipo || tipo == "Escoge un tipo") && precio>=valores[0] && precio<=valores[1]){
+        html += template(key,idx);
+      }
     }
     else {
-      html += `<div class="card horizontal">
-                <div class="card-image">
-                  <img src="http://localhost:3000/img/home.jpg">
-                </div>
-                <div class="card-stacked">
-                  <div class="card-content">
-                    <div> <p><strong>Direccion: </strong>${ key.Direccion }</p> </div>
-                    <div> <p><strong>Ciudad: </strong>${ key.Ciudad }</p> </div>
-                    <div> <p><strong>Telefono: </strong>${ key.Telefono }</p> </div>
-                    <div> <p><strong>Código postal: </strong>${ key.Codigo_Postal }</p> </div>
-                    <div> <p><strong>Precio: </strong>${ key.Precio }</p> </div>
-                    <div> <p><strong>Tipo: </strong>${ key.Tipo }</p> </div>
-                  </div>
-                 </div>
-              </div>`;
+      html += template(key,idx);
      }
    });
  return html;
 }//fin render
+
+function template (key,idx) { //Template usado para mostrar datos de las propiedades
+  let html = `<div class="card horizontal">
+            <div class="card-image">
+              <img src="img/home.jpg">
+            </div>
+            <div class="card-stacked">
+              <div class="card-content">
+                <div> <p><strong>Direccion: </strong>${ key.Direccion }</p> </div>
+                <div> <p><strong>Ciudad: </strong>${ key.Ciudad }</p> </div>
+                <div> <p><strong>Telefono: </strong>${ key.Telefono }</p> </div>
+                <div> <p><strong>Código postal: </strong>${ key.Codigo_Postal }</p> </div>
+                <div> <p><strong>Precio: </strong>${ key.Precio }</p> </div>
+                <div> <p><strong>Tipo: </strong>${ key.Tipo }</p> </div>
+              </div>
+             </div>
+          </div>`;
+
+  return html;
+};
